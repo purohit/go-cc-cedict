@@ -8,7 +8,7 @@ A parser for the wonderful Chinese <-> English [CC-CEDICT](https://cc-cedict.org
 The dictionary as written was not meant for machine consumption, but I'm doing my damndest
 to parse it for applications.
 
-### Usage
+## Usage
 
 You can either use a convenience function to load up the whole dictionary given the [raw data file](https://www.mdbg.net/chinese/dictionary?page=cedict) or parse individual lines, as you
 please.
@@ -34,7 +34,7 @@ entry, _ := cedict.ParseEntry("企投 企投 [qi4 tou2] /to have fun (Taiwanese,
 fmt.Println(e.Simplified, e.Pinyin, e.EnglishDefinitions)
 ```
 
-### Contributing
+## Contributing
 
 I'd appreciate contributions that help make `Entry`s even more specific
 -- there are a lot of exceptions in the definitions since they're somewhat
@@ -45,7 +45,7 @@ where all abbreviations are parsed out instead of remaining in
 Please add your own tests and make sure the current ones pass! I'm okay with reasonable
 backwards-incompatibility (I expect this library to be low-usage) via modifications to `Entry`.
 
-### License
+## License
 
 The license for this parsing software itself is MIT, however the actual dictionary data is licensed under a CC license (see the [main project
 page](https://cc-cedict.org/wiki/) for more info).
