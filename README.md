@@ -1,6 +1,7 @@
 ### go-cc-cedict
 [![Build
 Status](https://travis-ci.org/purohit/go-cc-cedict.svg?branch=master)](https://travis-ci.org/purohit/go-cc-cedict)
+[![GoDoc](https://godoc.org/github.com/purohit/go-cc-cedict?status.svg)](https://godoc.org/github.com/purohit/go-cc-cedict)
 
 A parser for the wonderful [CC-CEDICT](https://cc-cedict.org/wiki/) project that parses the dictionary and
 returns structured `Entry` structs with definitions, Pinyin, Simplified and
