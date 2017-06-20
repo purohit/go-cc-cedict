@@ -3,7 +3,8 @@ package cedict
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
+	"regexp"
 	"strings"
 )
 
@@ -30,10 +31,11 @@ type Variant struct {
 // this word, along with some markers on register and
 // regional dialects.
 type Definition struct {
-	Text       string
-	Idiom      bool
-	Slang      bool
-	Colloquial bool
+	Text           string
+	Idiom          bool
+	FigureofSpeech bool
+	Slang          bool
+	Colloquial     bool
 	// Definition only applies regionally:
 	Cantonese bool
 	Taiwanese bool
@@ -62,16 +64,11 @@ func (e *Entry) String() string {
 	return fmt.Sprintf("%s\t%s", e.Simplified, e.Pinyin)
 }
 
-// ParseDictionary reads the CC-CEDICT .txt file, and parses
+// ParseDictionary reads a CC-CEDICT buffer, and parses
 // all entries into Entries, skipping comments and breaking
 // on errors.
-func ParseDictionary(filename string) (*Dictionary, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+func ParseDictionary(r io.Reader) (*Dictionary, error) {
+	scanner := bufio.NewScanner(r)
 	dict := &Dictionary{Entries: make([]*Entry, 0)}
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -99,25 +96,25 @@ func newEntry() *Entry {
 	}
 }
 
+var entryRegexp = regexp.MustCompile(`^(.*) (.*) \[(.*)\] /(?:(.*)/)+`)
+
+// ParseEntry parses a single dictionary line
 func ParseEntry(line string) (*Entry, error) {
-	parts := strings.SplitN(line, " ", 4)
-	if len(parts) < 4 {
-		return nil, fmt.Errorf("Not enough parts in dict")
+	matches := entryRegexp.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, fmt.Errorf("Entry doesn't match regular expression")
 	}
 	e := newEntry()
-	e.Traditional = parts[0]
-	e.Simplified = parts[1]
-	e.Pinyin = strings.ToLower(strings.Trim(parts[2], "[]"))
-	parts = strings.Split(parts[3], "/")
-	if len(parts) < 3 {
+	e.Traditional = matches[1]
+	e.Simplified = matches[2]
+	e.Pinyin = strings.ToLower(matches[3])
+	defs := strings.Split(matches[4], "/")
+	if len(defs) == 0 {
 		return nil, fmt.Errorf("No definitions found")
 	}
-	// Throw away first and last parts since definition start has /
-	parts = parts[1:]
-	parts = parts[:len(parts)-1]
-	for _, part := range parts[1:] {
+	for _, def := range defs {
 		e.Definitions = append(e.Definitions, Definition{
-			Text: part,
+			Text: def,
 		})
 	}
 	return e, nil
