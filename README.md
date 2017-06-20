@@ -16,19 +16,20 @@ please.
 ```go
 import (
     "fmt"
+    "os"
 
     cedict "github.com/purohit/go-cc-cedict"
 )
 
-dict, _ := cedict.ParseDictionary("/home/data/cedict_1_0_ts_utf-8_mdbg.txt")
-for i, entry := range dict.Entries {
+f, _ := os.Open("/home/data/cedict_1_0_ts_utf-8_mdbg.txt")
+defer f.Close()
+dict, _ := cedict.ParseDictionary(f)
+for _, entry := range dict.Entries {
     fmt.Println(e)
-    if i > 10 {
-        break
-    }
+    break
 }
 
-// Alternatively, parse the lines yourself:
+// Or, parse a line yourself:
 
 entry, _ := cedict.ParseEntry("企投 企投 [qi4 tou2] /to have fun (Taiwanese, POJ pr. [chhit-thô])/")
 fmt.Println(e.Simplified, e.Pinyin, e.EnglishDefinitions)
